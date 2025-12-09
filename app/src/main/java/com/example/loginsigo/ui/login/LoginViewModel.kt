@@ -9,6 +9,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * Estado de la interfaz de usuario para la pantalla de inicio de sesión.
+ *
+ * @param username El nombre de usuario actual.
+ * @param password La contraseña actual.
+ * @param isLoading `true` si hay una operación de inicio de sesión en curso.
+ * @param loginSuccess `true` si el inicio de sesión fue exitoso.
+ * @param errorMessage Mensaje de error a mostrar, o `null` si no hay error.
+ * @param user La información del usuario si el inicio de sesión fue exitoso.
+ */
 data class LoginUiState(
     val username: String = "",
     val password: String = "",
@@ -18,23 +28,49 @@ data class LoginUiState(
     val user: UserResponse? = null
 )
 
+/**
+ * ViewModel para la pantalla de inicio de sesión.
+ *
+ * Gestiona el estado de la UI (`LoginUiState`) y maneja la lógica de negocio
+ * para la autenticación del usuario a través del [AuthRepository].
+ *
+ * @param repository El repositorio para manejar la lógica de autenticación.
+ */
 class LoginViewModel(
     private val repository: AuthRepository
 ) : ViewModel() {
 
     // Estado mutable interno que el ViewModel puede modificar
     private val _uiState = MutableStateFlow(LoginUiState())
-    // Estado inmutable que se expone a la UI (View) para ser observado
+    /**
+     * Estado inmutable de la UI que se expone a la Vista para ser observado.
+     */
     val uiState: StateFlow<LoginUiState> = _uiState
 
+    /**
+     * Actualiza el nombre de usuario en el estado de la UI.
+     *
+     * @param newUsername El nuevo nombre de usuario introducido.
+     */
     fun onUsernameChange(newUsername: String) {
         _uiState.value = _uiState.value.copy(username = newUsername, errorMessage = null)
     }
 
+    /**
+     * Actualiza la contraseña en el estado de la UI.
+     *
+     * @param newPassword La nueva contraseña introducida.
+     */
     fun onPasswordChange(newPassword: String) {
         _uiState.value = _uiState.value.copy(password = newPassword, errorMessage = null)
     }
 
+    /**
+     * Inicia el proceso de inicio de sesión.
+     *
+     * Valida las entradas, actualiza el estado para mostrar la carga, y llama al
+     * repositorio para autenticar al usuario. El resultado se refleja en el [uiState].
+     */
     fun login() {
         // Validación básica
         if (_uiState.value.username.isBlank() || _uiState.value.password.isBlank()) {
@@ -75,7 +111,11 @@ class LoginViewModel(
         }
     }
 
+    /**
+     * Restablece el estado de la UI a sus valores iniciales, limpiando los campos
+     * y cualquier mensaje de error.
+     */
     fun clearFields() {
-        _uiState.value = LoginUiState(errorMessage = null) // Restablece todo el estado (limpia campos y mensajes)
+        _uiState.value = LoginUiState(errorMessage = null)
     }
 }

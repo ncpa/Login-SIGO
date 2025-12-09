@@ -5,11 +5,28 @@ import com.example.loginsigo.data.model.LoginRequest
 import com.example.loginsigo.data.model.UserResponse
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Repositorio que gestiona la autenticación del usuario.
+ *
+ * Esta clase abstrae las fuentes de datos (remota y local) y proporciona una API limpia
+ * para realizar operaciones de autenticación como iniciar y cerrar sesión.
+ *
+ * @param tokenManager El gestor de tokens para almacenar y recuperar el token de sesión.
+ */
 class AuthRepository(
     private val tokenManager: TokenManager // Inyectamos el TokenManager
 ) {
     private val apiService = RetrofitClient.apiService
 
+    /**
+     * Intenta iniciar sesión con las credenciales proporcionadas.
+     *
+     * Realiza una llamada a la API y, si tiene éxito, guarda el token de autenticación.
+     *
+     * @param request El objeto con las credenciales de inicio de sesión.
+     * @return Un [Result] que contiene [UserResponse] si el inicio de sesión es exitoso,
+     * o una [Exception] si falla.
+     */
     suspend fun login(request: LoginRequest): Result<UserResponse> {
         return try {
             val response = apiService.loginUser(request)
@@ -24,7 +41,6 @@ class AuthRepository(
                 Result.success(userResponse)
             } else {
                 // Fallo: código de error HTTP (4xx, 5xx) o cuerpo nulo
-                // Podrías parsear response.errorBody() a un mensaje de error si la API lo proporciona
                 Result.failure(Exception("Error al iniciar sesión: Código ${response.code()}"))
             }
         } catch (e: Exception) {
@@ -32,10 +48,17 @@ class AuthRepository(
             Result.failure(e)
         }
     }
-    // Opcional: Función para obtener el token actual
+
+    /**
+     * Obtiene el token de autenticación guardado.
+     *
+     * @return Un [Flow] que emite el token guardado, o `null` si no existe.
+     */
     fun getSavedToken(): Flow<String?> = tokenManager.getToken()
 
-    // Opcional: Función para cerrar sesión
+    /**
+     * Cierra la sesión del usuario eliminando el token de autenticación.
+     */
     suspend fun logout() {
         tokenManager.clearToken()
     }

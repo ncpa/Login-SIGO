@@ -25,6 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.loginsigo.data.model.UserResponse
 
+/**
+ * Pantalla que muestra los detalles del usuario después de un inicio de sesión exitoso.
+ *
+ * @param user El objeto [UserResponse] que contiene la información del usuario a mostrar.
+ * @param navController El controlador de navegación para manejar acciones como retroceder.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(
@@ -35,7 +41,6 @@ fun WelcomeScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Detalles del Usuario") },
-                // Agregamos el botón de navegación/retroceso
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -62,7 +67,7 @@ fun WelcomeScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            // Contenido de los datos (las funciones DataRow se mantienen igual)
+            // Contenido de los datos
             DataRow(label = "Nombre Completo", value = user.personFullName)
             DataRow(label = "Usuario", value = user.username)
             DataRow(label = "Email", value = user.email)
@@ -86,13 +91,16 @@ fun WelcomeScreen(
             DataRow(label = "Usuario Activo", value = if (user.active) "Sí" else "No")
             DataRow(label = "Registro", value = user.register)
             DataRow(label = "Términos y Condiciones", value = if (user.termsConditions) "Aceptados" else "Pendiente")
-
-            // Los campos 'password' y 'bearer' NO se muestran, tal como lo solicitaste.
         }
     }
 }
 
-// Composable auxiliar para un formato de fila consistente
+/**
+ * Composable auxiliar para mostrar una fila de datos con una etiqueta y un valor.
+ *
+ * @param label La etiqueta descriptiva del dato.
+ * @param value El valor del dato a mostrar.
+ */
 @Composable
 fun DataRow(label: String, value: String) {
     Row(
